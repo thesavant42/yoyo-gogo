@@ -3,7 +3,7 @@ import board
 import pwmio
 import digitalio
 
-# Pin Definitions for Motor 1
+# Pin Definitions for Motor 1 (Left Wheel)
 enable_pin1 = digitalio.DigitalInOut(board.D10)
 enable_pin1.direction = digitalio.Direction.OUTPUT
 
@@ -15,7 +15,7 @@ direction_pin1.direction = digitalio.Direction.OUTPUT
 
 pwm_motor1 = pwmio.PWMOut(board.D13, frequency=1000, duty_cycle=0, variable_frequency=True)
 
-# Pin Definitions for Motor 2
+# Pin Definitions for Motor 2 (Right Wheel)
 enable_pin2 = digitalio.DigitalInOut(board.A3)
 enable_pin2.direction = digitalio.Direction.OUTPUT
 
@@ -25,7 +25,7 @@ brake_pin2.direction = digitalio.Direction.OUTPUT
 direction_pin2 = digitalio.DigitalInOut(board.A1)
 direction_pin2.direction = digitalio.Direction.OUTPUT
 
-pwm_motor2 = pwmio.PWMOut(board.A0, frequency=1000, duty_cycle=0, variable_frequency=True)
+pwm_motor2 = pwmio.PWMOut(board.A0, frequency=2000, duty_cycle=0, variable_frequency=True)
 
 # Constants
 MIN_SPEED = 1000  # Hz
@@ -35,7 +35,7 @@ RAMP_DELAY = 2    # Seconds
 
 def print_motor_state(speed, motor_id):
     print(f"Motor {motor_id} - PWM Frequency: {speed} Hz")
-    print(f"Motor {motor_id} - Direction: {'Forward' if motor_id == 1 and direction_pin1.value else 'Forward' if motor_id == 2 and direction_pin2.value else 'Reverse'}")
+    print(f"Motor {motor_id} - Direction: {'Forward' if motor_id == 1 and direction_pin1.value else 'Forward' if motor_id == 2 and direction_pin2.value == 0 else 'Reverse'}")
     print(f"Motor {motor_id} - Brake: {'Engaged' if motor_id == 1 and not brake_pin1.value else 'Engaged' if motor_id == 2 and not brake_pin2.value else 'Released'}")
     print(f"Motor {motor_id} - Enable: {'ON' if motor_id == 1 and enable_pin1.value else 'ON' if motor_id == 2 and enable_pin2.value else 'OFF'}")
     print("--------------------------------")
@@ -43,8 +43,9 @@ def print_motor_state(speed, motor_id):
 def drive_motors():
     try:
         # Set direction forward for both motors
+        # Motor 2 should be reversed, since it does not know which way "forward" is
         direction_pin1.value = True
-        direction_pin2.value = True
+        direction_pin2.value = False
 
         # Enable both motors
         enable_pin1.value = True
@@ -85,6 +86,10 @@ def drive_motors():
         print_motor_state(0, 1)
         print_motor_state(0, 2)
 
+        # And exit
+        print("Bye!")
+        quit()
+    
     except Exception as e:
         print(f"Error occurred: {e}")
 

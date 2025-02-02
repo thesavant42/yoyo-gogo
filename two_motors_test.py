@@ -13,7 +13,7 @@ brake_pin1.direction = digitalio.Direction.OUTPUT
 direction_pin1 = digitalio.DigitalInOut(board.D12)
 direction_pin1.direction = digitalio.Direction.OUTPUT
 
-pwm_motor1 = pwmio.PWMOut(board.D13, frequency=1000, duty_cycle=0)
+pwm_motor1 = pwmio.PWMOut(board.D13, frequency=1000, duty_cycle=0, variable_frequency=True)
 
 # Pin Definitions for Motor 2
 enable_pin2 = digitalio.DigitalInOut(board.A3)
@@ -25,7 +25,7 @@ brake_pin2.direction = digitalio.Direction.OUTPUT
 direction_pin2 = digitalio.DigitalInOut(board.A1)
 direction_pin2.direction = digitalio.Direction.OUTPUT
 
-pwm_motor2 = pwmio.PWMOut(board.A0, frequency=1000, duty_cycle=0)
+pwm_motor2 = pwmio.PWMOut(board.A0, frequency=1000, duty_cycle=0, variable_frequency=True)
 
 # Constants
 MIN_SPEED = 1000  # Hz

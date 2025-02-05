@@ -82,7 +82,7 @@ def set_speed(left_speed: float, right_speed: float, ramp_time=0.5):
         PWM_R.duty_cycle = int(((current_right + (right_speed - current_right) * easing_factor) * 65535))
         time.sleep(delay)
 
-def move(left_speed=1.0, right_speed=1.0, forward=True):
+def move(left_speed=SPEED_LEVELS[speed_index], right_speed=SPEED_LEVELS[speed_index], forward=True):
     """ Moves the robot at given speed and direction for a fixed duration. """
     ENABLE_L.value = 1  # Enable motors
     ENABLE_R.value = 1
@@ -108,25 +108,31 @@ def stop():
     print("Stopping: Motors disabled, Brakes engaged")
     time.sleep(0.1)  # Ensure braking takes effect
 
-def turn_left():
-    """ Turn left using differential drive while respecting direction inversion. """
-    move(
-        left_speed=0.3,
-        right_speed=0.5,
-        forward=True if not dir_L_inverted else False
-    )
-    """ Turn left using differential drive """
-    move(left_speed=0.3, right_speed=0.5, forward=True)
+def pivot_left():
+    """ Spins the robot in place to the left by moving wheels in opposite directions at equal speed. """
+    ENABLE_L.value = 1  # Enable motors
+    ENABLE_R.value = 1
+    DIR_L.value = (1 if not dir_L_inverted else 0)  # Left wheel moves backward
+    DIR_R.value = (0 if not dir_R_inverted else 1)  # Right wheel moves forward
+    BRAKE_L.value = 0
+    BRAKE_R.value = 0
+    print("Pivoting Left: Left motor backward, Right motor forward")
+    set_speed(0.3, 0.3)  # Ensure both motors move at the same speed
+    time.sleep(MOVE_DURATION)
+    stop()
 
-def turn_right():
-    """ Turn right using differential drive while respecting direction inversion. """
-    move(
-        left_speed=0.5,
-        right_speed=0.3,
-        forward=True if not dir_R_inverted else False
-    )
-    """ Turn right using differential drive """
-    move(left_speed=0.5, right_speed=0.3, forward=True)
+def pivot_right():
+    """ Spins the robot in place to the right by moving wheels in opposite directions at equal speed. """
+    ENABLE_L.value = 1  # Enable motors
+    ENABLE_R.value = 1
+    DIR_L.value = (0 if not dir_L_inverted else 1)  # Left wheel moves forward
+    DIR_R.value = (1 if not dir_R_inverted else 0)  # Right wheel moves backward
+    BRAKE_L.value = 0
+    BRAKE_R.value = 0
+    print("Pivoting Right: Left motor forward, Right motor backward")
+    set_speed(0.3, 0.3)  # Ensure both motors move at the same speed
+    time.sleep(MOVE_DURATION)
+    stop()
 
 # === Serial Control ===
 print("Starting Serial Control... Use keys to control the robot.")
@@ -152,9 +158,9 @@ while True:
     elif command == "S":
         move(SPEED_LEVELS[speed_index], SPEED_LEVELS[speed_index], forward=False)
     elif command == "A":
-        turn_left()
+        pivot_left()
     elif command == "D":
-        turn_right()
+        pivot_right()
     elif command == "X":
         stop()
     elif command == "+":
@@ -167,6 +173,5 @@ while True:
         toggle_dir_R()
     elif command == "B":
         toggle_brakes()
-        toggle_dir_R()
     else:
         print("Invalid command. Use W, S, A, D, X, +, -, L, or R.")

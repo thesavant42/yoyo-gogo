@@ -4,23 +4,25 @@ import pwmio
 import time
 import sys
 
+
+## end testing
 # === Configuration ===
-SPEED_LEVELS = [0.1, 0.3, 0.5, 0.7, 1.0]  # Define different speed levels
+SPEED_LEVELS = [0.05, 0.1, 0.2, 0.3, 0.5]  # Define different speed levels
 speed_index = 2  # Default speed level (middle of the list)
-THROTTLE_SENSITIVITY = 0.1  # Adjusted for lower speed control
+THROTTLE_SENSITIVITY = 0.05  # Adjusted for lower speed control
 PWM_FREQUENCY = 1000  # PWM frequency in Hz
-MOVE_DURATION = 0.05  # Duration to run the motors on each key press (in seconds)
+MOVE_DURATION = 0.01  # Duration to run the motors on each key press (in seconds)
 
 # === Pin Assignments ===
-DIR_L_PIN = board.D12  # Direction control for left motor
-BRAKE_L_PIN = board.D11  # Brake control for left motor
-ENABLE_L_PIN = board.D10  # Enable control for left motor
-PWM_L_PIN = board.D13  # PWM control for left motor speed
+DIR_R_PIN = board.D12  # Direction control for left motor
+BRAKE_R_PIN = board.D11  # Brake control for left motor
+ENABLE_R_PIN = board.D10  # Enable control for left motor
+PWM_R_PIN = board.D13  # PWM control for left motor speed
 
-DIR_R_PIN = board.A1  # Direction control for right motor
-BRAKE_R_PIN = board.A2  # Brake control for right motor
-ENABLE_R_PIN = board.A3  # Enable control for right motor
-PWM_R_PIN = board.A0  # PWM control for right motor speed
+DIR_L_PIN = board.A1  # Direction control for right motor
+BRAKE_L_PIN = board.A2  # Brake control for right motor
+ENABLE_L_PIN = board.A3  # Enable control for right motor
+PWM_L_PIN = board.A0  # PWM control for right motor speed
 
 # === Define Motor Control Pins ===
 DIR_L = digitalio.DigitalInOut(DIR_L_PIN)
@@ -39,9 +41,20 @@ for pin in [DIR_L, BRAKE_L, ENABLE_L, DIR_R, BRAKE_R, ENABLE_R]:
 
 # === Motor Control Functions ===
 
+# Brake toggle state
+brakes_engaged = False
+
+def toggle_brakes():
+    """ Toggles the brakes for both left and right motors. """
+    global brakes_engaged
+    brakes_engaged = not brakes_engaged
+    BRAKE_L.value = 1 if brakes_engaged else 0
+    BRAKE_R.value = 1 if brakes_engaged else 0
+    print(f"Brakes {'engaged' if brakes_engaged else 'released'}")
+
 # Direction Inversion Flags
-dir_L_inverted = False
-dir_R_inverted = True
+dir_L_inverted = True
+dir_R_inverted = False
 
 def toggle_dir_L():
     """ Toggles the direction logic for the left motor """
@@ -73,8 +86,8 @@ def move(left_speed=1.0, right_speed=1.0, forward=True):
     """ Moves the robot at given speed and direction for a fixed duration. """
     ENABLE_L.value = 1  # Enable motors
     ENABLE_R.value = 1
-    DIR_L.value = 1 if forward else 0
-    DIR_R.value = 0 if forward else 1
+    DIR_L.value = (0 if forward else 1) if not dir_L_inverted else (1 if forward else 0)
+    DIR_R.value = (0 if forward else 1) if not dir_R_inverted else (1 if forward else 0)
     BRAKE_L.value = 0
     BRAKE_R.value = 0
     print(f"Moving {'forward' if forward else 'backward'}: Left speed = {left_speed}, Right speed = {right_speed}")
@@ -96,16 +109,29 @@ def stop():
     time.sleep(0.1)  # Ensure braking takes effect
 
 def turn_left():
+    """ Turn left using differential drive while respecting direction inversion. """
+    move(
+        left_speed=0.3,
+        right_speed=0.5,
+        forward=True if not dir_L_inverted else False
+    )
     """ Turn left using differential drive """
     move(left_speed=0.3, right_speed=0.5, forward=True)
 
 def turn_right():
+    """ Turn right using differential drive while respecting direction inversion. """
+    move(
+        left_speed=0.5,
+        right_speed=0.3,
+        forward=True if not dir_R_inverted else False
+    )
     """ Turn right using differential drive """
     move(left_speed=0.5, right_speed=0.3, forward=True)
 
 # === Serial Control ===
 print("Starting Serial Control... Use keys to control the robot.")
-print("W: Forward, S: Backward, A: Left, D: Right, X: Stop, +: Increase Speed, -: Decrease Speed")
+print("B: Toggle Brakes")
+print("W: Forward, S: Backward, A: Left, D: Right, X: Stop, +: Increase Speed, -: Decrease Speed, L: Toggle Left Dir, R: Toggle Right Dir")
 
 def increase_speed():
     global speed_index
@@ -135,5 +161,12 @@ while True:
         increase_speed()
     elif command == "-":
         decrease_speed()
+    elif command == "L":
+        toggle_dir_L()
+    elif command == "R":
+        toggle_dir_R()
+    elif command == "B":
+        toggle_brakes()
+        toggle_dir_R()
     else:
-        print("Invalid command. Use W, S, A, D, X, +, or -.")
+        print("Invalid command. Use W, S, A, D, X, +, -, L, or R.")

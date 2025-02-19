@@ -20,7 +20,6 @@ Each ZSX11H motor driver has the following key input pins:
 | A3          | STOP_L           | Stop control for left motor  |
 | A4          | L_Speed          | Speed Pulse for left motor   |
 | True        | Fwd_L_Logic      | Is "Fwd" correct? Invert if not |
-|-------------|------------------|-------------------------------|
 
 #### RIGHT MOTOR 
 | Arduino Pin | Motor Driver Pin | Description                   |

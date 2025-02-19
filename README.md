@@ -10,9 +10,10 @@ Each ZSX11H motor driver has the following key input pins:
 5. **GND**: Common ground.
 
 ### Arduino Pin Assignments
+
+#### LEFT MOTOR 
 | Arduino Pin | Motor Driver Pin | Description                   |
 |-------------|------------------|-------------------------------|
-| **LEFT**    |                  |                               |
 | A0          | PWM_L            | Speed control for left motor |
 | A1          | DIR_L            | Direction control for left motor|
 | A2          | BRAKE_L          | Brake control for left motor |
@@ -20,7 +21,9 @@ Each ZSX11H motor driver has the following key input pins:
 | A4          | L_Speed          | Speed Pulse for left motor   |
 | True        | Fwd_L_Logic      | Is "Fwd" correct? Invert if not |
 |-------------|------------------|-------------------------------|
-| **RIGHT**   |                  |                               |
+
+#### RIGHT MOTOR 
+| Arduino Pin | Motor Driver Pin | Description                   |
 |-------------|------------------|-------------------------------|
 | D9          | PWM_R            | Speed control for right motors|
 | D10         | STOP_R           | Stop control for right motors |

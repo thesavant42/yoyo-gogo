@@ -30,3 +30,5 @@ Each ZSX11H motor driver has the following key input pins:
 | D12         | DIR_R            | Direction control for right motors|
 | D13         | SPEED_R          | Speed pulse for right motors|
 | False       | FWD_R            | Is "Fwd" correct? Invert if not|
+
+The DIR_L/DIR_R pin logic is counter-intuitive. Default is `0`, which turns the wheel "forward", and a `1` turns the wheel "reverse". The opposite side wheel will have logic; that's 1 to go "forward" (relative to the front of the Robot) and 0 to go "reverse". 

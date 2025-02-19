@@ -17,8 +17,8 @@ Each ZSX11H motor driver has the following key input pins:
 | True        | Fwd_L_Logic      | Is "Fwd" correct? Invert if not |
 | A2          | BRAKE_L          | Brake control for left motor |
 | A3          | STOP_L           | Stop control for left motor  |
-| A4          | L_Speed          | Speed Pulse for left motor
-|
+| A4          | L_Speed          | Speed Pulse for left motor   |
+|             |                  |                              |
 | D9          | PWM_R            | Speed control for right motors|
 | D12         | DIR_R            | Direction control for right motors|
 | False       | Fwd_R_Logic      | Is "Fwd" correct? Invert if not |
